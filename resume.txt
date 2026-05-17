@@ -1,0 +1,83 @@
+ABIOLA AKINSELURE
+IT Support Specialist
+akinselureabiola​@gmail.com
+ 
++4917684214601
+ 
+Berlin, Germany
+ 
+linkedin.com/in/abiola-akinselure-599134241
+ 
+github.com/akinselureabiola
+ 
+Profile
+IT Support professional with hands-on experience delivering 1st and 2nd level support across Microsoft 365, Entra ID, and Active Directory environments. Comfortable resolving hardware, software, networking, and access-related incidents both on-site and remotely, with a structured approach to incident management and SLA-based ticket handling. Experienced in device lifecycle, user provisioning, and endpoint troubleshooting in fast-paced settings. Brings additional grounding in DNS, DHCP, VPN, and TCP/​IP troubleshooting with practical exposure through lab-based projects and real support roles in Berlin and internationally.
+
+Skills
+IT Support & Incident Management: 1st & 2nd level support, ticketing systems (Jira), SLA tracking, incident documentation, root cause analysis
+Microsoft 365 & Entra ID: Exchange Online, Teams, OneDrive, SharePoint, license management, mailbox provisioning, Entra ID administration
+Active Directory: User lifecycle management, security group administration, password resets, access control, onboarding/offboarding
+Endpoint & Device Management: Windows OS support, hardware installation, device configuration, peripheral setup, Intune (exposure)
+Networking: DNS, DHCP, VPN, TCP/IP, connectivity troubleshooting, network adapter configuration
+Process & Documentation: Knowledge base maintenance, process standardisation, IT asset tracking, structured troubleshooting
+Languages: English (C1), German (B1 – actively improving)
+Professional Experience
+Working Student – IT Support & Operations
+
+Capital Catering GmbH
+•Provided 1st and 2nd level IT support, resolving 15–25 hardware, software, and connectivity incidents weekly within SLA targets
+05/2025 – 04/2026
+Berlin, Germany
+•Delivered endpoint support across Windows-based laptops, desktops, and peripherals, including installation, configuration, and maintenance
+•Supported user lifecycle management in Active Directory: account creation, password resets, group assignments, and offboarding
+•Administered Microsoft 365 services, including Exchange Online, Teams, and OneDrive, for day-to-day user support
+•Diagnosed and resolved networking issues covering DNS, VPN, and TCP/​IP connectivity for on-site users
+•Tracked and documented incidents, troubleshooting steps, and resolutions to maintain internal knowledge base accuracy
+•Contributed to onboarding and offboarding processes, including device preparation and access provisioning
+•Escalated unresolved incidents to senior team members or external vendors with proper handover documentation
+IT Support Intern
+
+DaizSign Multimedia Ltd
+•Managed 15–25 weekly support requests across hardware, software, and user account issues using a structured ticket-based approach
+01/2024 – 02/2025
+Ibadan, Nigeria
+•Provided technical support for Windows systems, user accounts, and business-critical software
+•Assisted with device configuration, access control, and onboarding activities for new users
+•Delivered remote troubleshooting support and documented recurring issues to improve team response efficiency
+•Supported incident tracking and contributed to basic process documentation for the support team
+TECHNICAL PROJECT
+
+Operational Systems Troubleshooting & Process Simulation⁠
+•Built and documented hands-on Active Directory, DNS, DHCP, VPN, and Microsoft 365 troubleshooting labs using Windows Server environments
+•Simulated real-world IT support scenarios, including user provisioning, access control, Exchange Online troubleshooting, and network connectivity diagnostics
+•Practised structured troubleshooting using tools such as nslookup, ipconfig, ping, and PowerShell
+•Developed a small AI-powered troubleshooting assistant to simulate structured helpdesk triage workflows
+•Documented all projects and troubleshooting workflows on GitHub
+Education
+BEng, Mining Engineering
+
+Federal University of Technology
+02/2010 – 08/2015
+Akure, Nigeria
+MSc Data Analytics
+
+Berlin School of Business and Innovation
+05/2024 – 04/2026
+Berlin, Germany
+Certificates
+Google Data Analytics Professional
+Coursera
+
+Google Cybersecurity Professional Certificate
+Coursera
+
+Google IT Support Professional Certificate
+Coursera
+
+Languages
+English
+C1
+
+German
+B1
+
