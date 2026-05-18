@@ -1,10 +1,9 @@
 """
 AI Career Assistant
-Analyzes your resume against a job description and generates:
-- Match score and gap analysis
-- Tailored resume sections
-- ATS-optimized cover letter
-- Interview prep topics
+
+Takes your resume and a job description, sends them to the OpenAI API,
+and generates a structured career analysis, tailored resume suggestions,
+and a cover letter — all saved as local files.
 """
 
 import os
@@ -14,8 +13,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from docx import Document
 
-
-# Setup
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -28,7 +25,6 @@ def print_header(title: str) -> None:
 
 
 def load_resume(filepath: str = "resume.txt") -> str:
-    """Load resume from a text file."""
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             return f.read()
@@ -38,7 +34,6 @@ def load_resume(filepath: str = "resume.txt") -> str:
 
 
 def get_job_description() -> str:
-    # Get job description from terminal
     print("Paste the job description below.")
     print("When finished, type END on a new line.\n")
     lines = []
@@ -48,92 +43,6 @@ def get_job_description() -> str:
             break
         lines.append(line)
     return "\n".join(lines)
-
-
-def build_prompt(resume_text, job_description):
-    return f"""
-Analyze the candidate's resume against the provided job description.
-Return your response in the EXACT format below — use the section delimiters as shown.
-
-===TAILORED_RESUME===
-
-RESUME MATCH ANALYSIS
-
-1. REALISTIC MATCH SCORE
-Give a realistic percentage match with a brief explanation.
-
-2. STRONGEST MATCHING SKILLS
-- skill 1
-- skill 2
-
-3. IMPORTANT ATS KEYWORDS
-- keyword 1
-- keyword 2
-
-4. MISSING OR WEAK AREAS
-- missing skill 1
-- missing skill 2
-
-5. TAILORED PROFESSIONAL SUMMARY
-Generate:
-- A stronger ATS-optimized professional summary
-- Specifically tailored to this role
-- 4–6 lines long
-- Realistic and human-sounding
-- Emphasizing transferable skills honestly
-- Aligned with the job description
-
-6. TAILORED SKILLS SECTION
-Generate a more optimized ATS-friendly skills section based on the role.
-
-6A. TAILORED EXPERIENCE BULLETS
-Rewrite the candidate's existing experience bullets to better align with the job description.
-Requirements:
-- Keep all experience realistic and truthful
-- Improve ATS keyword alignment
-- Use stronger action verbs
-- Keep bullets concise and professional
-- Do not invent technologies not mentioned in the original resume
-
-7. RESUME IMPROVEMENT SUGGESTIONS
-Give practical, specific improvements.
-
-8. LIKELY RECRUITER CONCERNS
-List realistic concerns a recruiter might flag.
-
-9. INTERVIEW TOPICS TO PREPARE
-- topic 1
-- topic 2
-
-===TAILORED_COVER_LETTER===
-
-10. TAILORED COVER LETTER
-Generate a realistic cover letter tailored to the role.
-Requirements:
-- Sound natural and human — avoid robotic AI language
-- Professional but conversational tone
-- Length: 300–450 words
-- Highlight transferable technical skills honestly
-- Explain motivation for the role naturally
-- Reference relevant technologies from the job description
-- Emphasize problem-solving, troubleshooting, and adaptability
-- Do NOT invent fake experience or exaggerate qualifications
-- Structure: introduction, body paragraphs, and conclusion
-
-===CAREER_ANALYSIS===
-
-11. SHOULD THIS CANDIDATE APPLY?
-Give honest, practical advice. Consider experience level, skill gaps, and role fit.
-
-
-CANDIDATE RESUME
-
-{resume_text}
-
-JOB DESCRIPTION
-
-{job_description}
-"""
 
 
 SYSTEM_PROMPT = """
@@ -155,8 +64,125 @@ Core behavior rules:
 """
 
 
+def build_prompt(resume_text: str, job_description: str) -> str:
+    return f"""
+Analyze the candidate's resume against the provided job description.
+Return your response in the EXACT format below. Use the section delimiters exactly as shown.
+
+===TAILORED_RESUME===
+
+RESUME MATCH ANALYSIS
+
+1. REALISTIC MATCH SCORE
+Give a realistic percentage match with a brief explanation. Be honest — do not inflate the score.
+
+2. STRONGEST MATCHING SKILLS
+- skill 1
+- skill 2
+
+3. IMPORTANT ATS KEYWORDS
+- keyword 1
+- keyword 2
+
+4. MISSING OR WEAK AREAS
+- missing skill 1
+- missing skill 2
+
+5. TAILORED PROFESSIONAL SUMMARY
+Write a 4–6 line professional summary tailored to this specific role.
+Keep it realistic, human-sounding, and ATS-friendly.
+Do not exaggerate or invent experience.
+
+6. TAILORED SKILLS SECTION
+Rewrite the skills section to better align with what this role is looking for.
+Keep it truthful — only include skills the candidate actually has.
+
+6A. TAILORED EXPERIENCE BULLETS
+Rewrite the candidate's experience bullets to better match the job description.
+- Keep everything truthful
+- Use stronger action verbs
+- Improve ATS keyword alignment
+- Do not invent tools or technologies not in the original resume
+
+7. RESUME IMPROVEMENT SUGGESTIONS
+Give 3–5 specific, practical suggestions to improve the resume for this role.
+
+8. LIKELY RECRUITER CONCERNS
+List 3–5 realistic concerns a recruiter might have when reviewing this application.
+
+9. INTERVIEW TOPICS TO PREPARE
+- topic 1
+- topic 2
+
+===TAILORED_COVER_LETTER===
+
+10. TAILORED COVER LETTER
+Write a cover letter tailored to this specific role and candidate.
+Requirements:
+- Sound human and conversational — not like a template
+- Professional but not stiff
+- 300–400 words
+- Reference specific technologies or responsibilities from the job description
+- Be honest about experience level
+- Do not invent qualifications or fake enthusiasm
+- Structure: short intro, 2 body paragraphs, brief close
+
+===CAREER_ANALYSIS===
+
+Return this section in the following exact format. Do not change the headers or numbering.
+
+==============================
+JOB MATCH ANALYSIS
+==============================
+
+1. ATS KEYWORDS
+List the most important ATS keywords found in the job description.
+- keyword 1
+- keyword 2
+
+2. TECHNICAL SKILLS REQUIRED
+List the key technical skills the job requires.
+- skill 1
+- skill 2
+
+3. SOFT SKILLS REQUIRED
+List the soft skills mentioned or implied in the job description.
+- skill 1
+- skill 2
+
+4. REALISTIC MATCH SCORE
+Format it exactly like this — nothing else:
+
+MATCH SCORE: XX%
+Reason: One clear sentence explaining the score honestly.
+
+5. SKILL GAPS
+List specific skills or experience the candidate is missing for this role.
+- gap 1
+- gap 2
+
+6. INTERVIEW TOPICS TO PREPARE
+List the most important topics the candidate should prepare for.
+- topic 1
+- topic 2
+
+7. SHOULD I APPLY?
+Give honest, direct advice in 3–5 sentences.
+Consider experience level, skill gaps, role fit, and whether applying is worth the candidate's time.
+Do not be overly encouraging. Be realistic.
+
+
+CANDIDATE RESUME
+
+{resume_text}
+
+JOB DESCRIPTION
+
+{job_description}
+"""
+
+
 def call_openai(prompt: str) -> str:
-    """Send the prompt to OpenAI and return the response text."""
     response = client.chat.completions.create(
         model="gpt-4.1-mini",
         messages=[
@@ -169,11 +195,6 @@ def call_openai(prompt: str) -> str:
 
 
 def parse_sections(analysis: str) -> tuple[str, str, str]:
-    """
-    Split the AI response into three sections.
-    Returns (resume_section, cover_letter_section, career_analysis_section).
-    Falls back to empty strings on parse failure.
-    """
     try:
         resume_section = (
             analysis
@@ -195,8 +216,8 @@ def parse_sections(analysis: str) -> tuple[str, str, str]:
         return resume_section, cover_letter_section, career_analysis_section
 
     except (IndexError, Exception) as e:
-        print(f"\nWarning: Could not split sections cleanly ({e}).")
-        print("Printing full AI response instead.\n")
+        print(f"\nWarning: Could not parse sections cleanly ({e}).")
+        print("Printing full response instead.\n")
         print(analysis)
         return "", "", ""
 
@@ -205,35 +226,44 @@ def save_outputs(
     career_analysis: str,
     resume_section: str,
     cover_letter: str,
+    resume_text: str,
+    job_description: str,
 ) -> None:
-    """Create output folders and save files."""
 
-    # Create folders
     os.makedirs("analyses", exist_ok=True)
     os.makedirs("tailored_resumes", exist_ok=True)
     os.makedirs("cover_letters", exist_ok=True)
 
-    # Create timestamp
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
 
-    # Save Career Analysis (.txt)
-
+    # Career analysis — saved as .txt with full context
     analysis_path = f"analyses/career_analysis_{timestamp}.txt"
 
     with open(analysis_path, "w", encoding="utf-8") as f:
+        f.write("==============================\n")
+        f.write("CANDIDATE RESUME\n")
+        f.write("==============================\n\n")
+        f.write(resume_text)
+        f.write("\n\n==============================\n")
+        f.write("JOB DESCRIPTION\n")
+        f.write("==============================\n\n")
+        f.write(job_description)
+        f.write("\n\n==============================\n")
+        f.write("AI CAREER ANALYSIS\n")
+        f.write("==============================\n")
+        f.write("See section 4 below for your MATCH SCORE\n")
+        f.write("------------------------------\n\n")
         f.write(career_analysis)
 
-    # Save Tailored Resume (.docx)
-
+    # Tailored resume — saved as .docx
     resume_path = f"tailored_resumes/tailored_resume_{timestamp}.docx"
 
     resume_doc = Document()
-    resume_doc.add_heading("Tailored Resume", level=1)
+    resume_doc.add_heading("Tailored Resume Suggestions", level=1)
     resume_doc.add_paragraph(resume_section)
     resume_doc.save(resume_path)
 
-    # Save Cover Letter (.docx)
-
+    # Cover letter — saved as .docx
     cover_letter_path = f"cover_letters/cover_letter_{timestamp}.docx"
 
     cover_doc = Document()
@@ -241,27 +271,14 @@ def save_outputs(
     cover_doc.add_paragraph(cover_letter)
     cover_doc.save(cover_letter_path)
 
-    # Success Message
-
     print_header("FILES GENERATED SUCCESSFULLY")
-
     print(f"  → {analysis_path}")
     print(f"  → {resume_path}")
     print(f"  → {cover_letter_path}")
-
     print()
 
-# Main
-
-# Main
 
 def main():
-
-    # TODO:
-    # add PDF resume support later
-    # improve DOCX formatting
-    # maybe add LinkedIn job URL input
-
     print_header("AI CAREER ASSISTANT")
 
     resume_text = load_resume()
@@ -281,10 +298,16 @@ def main():
     resume_section, cover_letter_section, career_analysis_section = parse_sections(analysis)
 
     if career_analysis_section:
-        save_outputs(career_analysis_section, resume_section, cover_letter_section)
+        save_outputs(
+            career_analysis_section,
+            resume_section,
+            cover_letter_section,
+            resume_text,
+            job_description,
+        )
     else:
         print("\nNo structured output was saved due to parsing issues.")
-        print("Check the printed output above for the full AI response.")
+        print("Check the output above for the full AI response.")
 
 
 if __name__ == "__main__":
