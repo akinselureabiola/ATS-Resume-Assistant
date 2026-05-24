@@ -1,13 +1,27 @@
-```txt id="7fh2ka"
-streamlit
-openai
-python-dotenv
-python-docx
-docxtpl
-pypdf
-streamlit-authenticator
-bcrypt
-PyJWT
-PyYAML
-cryptography
-```
+# Virtual Environments
+venv/
+.venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Environment Variables
+.env
+
+# Generated Files
+outputs/
+analysis/
+data/
+
+# macOS
+.DS_Store
+
+# Streamlit Secrets
+.streamlit/secrets.toml
+
+# VSCode
+.vscode/
+
+# Python Environment Config
+pyvenv.cfg
