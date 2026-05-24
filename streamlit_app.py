@@ -56,8 +56,11 @@ for folder in folders:
 # OPENAI CLIENT
 # =========================
 
+import streamlit as st
+from openai import OpenAI
+
 client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
+    api_key=st.secrets["OPENAI_API_KEY"]
 )
 
 # =========================
