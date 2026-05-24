@@ -4,3 +4,7 @@ python-dotenv
 python-docx
 docxtpl
 pypdf
+streamlit-authenticator
+bcrypt
+PyJWT
+PyYAML

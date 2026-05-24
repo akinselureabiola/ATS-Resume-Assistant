@@ -1,0 +1,15 @@
+credentials:
+  usernames:
+    admin:
+      email: admin@gmail.com
+      name: Admin User
+      password: $2b$12$O0PpEfhz1O2e.c3CAV84uuGAD17FkQMPGjUnFzDdwpbzAqZyGLhhS
+
+cookie:
+  expiry_days: 30
+  key: some_signature_key
+  name: ats_resume_cookie
+
+preauthorized:
+  emails:
+    - admin@gmail.com
