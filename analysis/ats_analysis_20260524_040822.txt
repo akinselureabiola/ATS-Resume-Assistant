@@ -1,0 +1,28 @@
+
+ATS MATCH ANALYSIS
+
+Estimated ATS Match Score:
+55
+
+
+MATCHING KEYWORDS:
+IT support, helpdesk, ticketing systems, incident management, onboarding/offboarding, user lifecycle management, hardware support, software support, VPN, network troubleshooting, Active Directory, Microsoft 365, Google Workspace, device management, documentation, endpoint security, SLA, remote support
+
+
+MISSING KEYWORDS:
+macOS support, JAMF, Mobile Device Management (MDM), Google Workspace administration (explicit), password managers (e.g., 1Password), Slack support, GitHub administration, Asana, HRIS automation tools (Rippling), startup/high-growth environment, hardware provisioning, patch management, collaboration tools support
+
+
+JOB FIT ANALYSIS:
+The candidate demonstrates solid experience in IT support with strong skills in Microsoft 365, Active Directory, Windows endpoint management, and basic networking (DNS, DHCP, VPN, TCP/IP). They have hands-on experience with ticketing, SLA adherence, onboarding/offboarding, and incident documentation, which aligns well with the operational and support aspects of the role. However, the job heavily emphasizes supporting macOS environments, JAMF (Apple device management), Google Workspace administration, and collaboration tools like Slack, Asana, and GitHub, which are either missing or only lightly touched on in the resume. The candidate’s experience is primarily Windows-focused with no direct macOS or JAMF exposure, and Google Workspace experience is not clearly stated as administration but rather user support. The role also requires familiarity with password managers, HRIS tools, and a startup or high-growth environment, which are not reflected in the resume. Communication skills and remote work adaptability appear suitable but could be better highlighted.
+
+
+RESUME IMPROVEMENT SUGGESTIONS:
+1. Add explicit mention of Google Workspace administration experience or training if applicable; otherwise, consider upskilling and including relevant certifications or projects.
+2. Highlight any exposure to macOS support or Apple device management; if none, consider gaining basic JAMF or MDM experience and adding it.
+3. Include familiarity with collaboration tools (Slack, Asana, GitHub) and password managers (e.g., 1Password), even if through projects or self-learning.
+4. Emphasize experience or adaptability to fast-paced, startup-like environments and remote-first work culture.
+5. Detail any patch management, hardware provisioning, or endpoint compliance activities performed.
+6. If possible, add any experience with HRIS or user lifecycle automation tools like Rippling.
+7. Strengthen communication skills section with examples of explaining technical issues to non-technical users.
+8. Use keywords from the job description verbatim (e.g., JAMF, MDM, Slack, GitHub) to improve ATS keyword matching.

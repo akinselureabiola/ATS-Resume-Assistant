@@ -1,0 +1,29 @@
+
+ATS MATCH ANALYSIS
+
+Estimated ATS Match Score:
+55
+
+
+MATCHING KEYWORDS:
+IT support, 1st and 2nd level support, Microsoft 365, Entra ID, Active Directory, Exchange Online, Teams, OneDrive, license management, mailbox provisioning, user lifecycle management, password resets, access control, endpoint support, Windows OS, device configuration, DNS, DHCP, VPN, TCP/IP, networking troubleshooting, ticketing systems, SLA tracking, incident documentation, root cause analysis, Intune (exposure), PowerShell, troubleshooting workflows, English (C1), German (B1)
+
+
+MISSING KEYWORDS:
+AWS, cloud computing, cloud support, Linux, serverless, DevOps, CI/CD, AI/ML, storage, databases, firewalls, routing, switching, LAN/WAN, traceroute, iperf, dig, CURL, system administration (advanced), on-call support, scripting beyond PowerShell basics, customer escalation, mentoring, process improvement, advanced networking protocols, German fluency (required level)
+
+
+JOB FIT ANALYSIS:
+The candidate demonstrates solid foundational IT support skills, particularly in Microsoft-centric environments, endpoint management, and basic networking troubleshooting. Their hands-on experience with Active Directory, Microsoft 365, and endpoint support aligns well with core support functions. However, the role demands strong cloud computing expertise, especially with AWS technologies, which the candidate does not demonstrate. There is no evidence of direct AWS experience, Linux system administration, or advanced networking skills such as routing, switching, firewalls, or cloud-native DevOps practices. The candidate’s German language skills are intermediate (B1), while the job requires fluency, which is a significant gap. The candidate’s experience level is junior (working student and intern roles), whereas the position expects a more seasoned engineer capable of handling complex cloud support cases, mentoring, and process improvements. Overall, the candidate is underqualified for this role but could be a good fit for a more junior or entry-level cloud support position with AWS-specific training.
+
+
+RESUME IMPROVEMENT SUGGESTIONS:
+- Gain hands-on experience with AWS services, ideally through certifications like AWS Certified Cloud Practitioner or AWS Solutions Architect Associate.
+- Develop Linux system administration skills and highlight any relevant experience or projects.
+- Expand networking knowledge to include routing, switching, firewalls, LAN/WAN, and diagnostic tools such as traceroute, iperf, dig, and CURL.
+- Improve German language proficiency to at least B2/C1 level to meet job requirements.
+- Include any scripting or automation experience beyond basic PowerShell, e.g., Python or Bash.
+- Highlight any customer-facing experience involving escalation, mentoring, or process improvements.
+- Emphasize any on-call or rotational support experience if applicable.
+- Tailor the resume to include cloud-related keywords and demonstrate understanding of cloud architectures and support methodologies.
+- Consider adding AWS-related projects or labs to GitHub to showcase cloud skills.

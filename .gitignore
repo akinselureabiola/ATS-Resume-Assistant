@@ -1,32 +1,13 @@
-```gitignore
-# Environment
-.env
-
-# Virtual Environments
-venv/
-.venv/
-
-# Python Cache
-__pycache__/
-*.pyc
-
-# macOS
-.DS_Store
-
-# Streamlit Secrets
-.streamlit/secrets.toml
-
-# VS Code
-.vscode/
-
-# Generated App Data
-data/
-outputs/
-analysis/
-
-# Generated Documents
-*.docx
-*.pdf
-
-# Logs
-*.log
+```txt id="7fh2ka"
+streamlit
+openai
+python-dotenv
+python-docx
+docxtpl
+pypdf
+streamlit-authenticator
+bcrypt
+PyJWT
+PyYAML
+cryptography
+```

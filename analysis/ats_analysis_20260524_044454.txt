@@ -1,0 +1,36 @@
+
+ATS MATCH ANALYSIS
+
+Estimated ATS Match Score:
+55
+
+
+MATCHING KEYWORDS:
+IT support, 1st level support, 2nd level support, Microsoft 365, Entra ID, Active Directory, Exchange Online, Teams, OneDrive, license management, user lifecycle management, password resets, access control, endpoint management, Windows OS support, hardware installation, device configuration, DNS, DHCP, VPN, TCP/IP troubleshooting, network adapter configuration, ticketing systems (Jira), SLA tracking, incident documentation, root cause analysis, process documentation, troubleshooting, PowerShell, English, German (B1)
+
+
+MISSING KEYWORDS:
+AWS, cloud computing, cloud support, Linux administration, system administration, serverless, DevOps, CI/CD, AI/ML, Storage, Networking (advanced: routing, switching, firewalls, LAN/WAN, traceroute, iperf, dig, CURL), scripting (beyond PowerShell), on-call support, customer escalation, cloud security, AWS Sovereign Cloud, AWS services troubleshooting, German fluency (C1 or native)
+
+
+JOB FIT ANALYSIS:
+The candidate demonstrates solid foundational IT support skills, particularly in Microsoft-centric environments (Active Directory, Microsoft 365, Entra ID) and endpoint management, which aligns with basic support roles. They show good networking troubleshooting knowledge (DNS, DHCP, VPN, TCP/IP) and incident management experience, which are relevant to the role.
+
+However, the AWS Cloud Support Engineer position demands strong cloud computing expertise, especially with AWS technologies, Linux system administration, advanced networking concepts, and familiarity with DevOps or serverless architectures. The candidate’s experience is primarily in on-premise Windows environments with limited exposure to cloud platforms and no demonstrated AWS skills or certifications. Their German language skills are intermediate (B1), below the job's requirement for fluency.
+
+Additionally, the role requires on-call availability, advanced troubleshooting across diverse cloud services, and scripting skills beyond basic PowerShell usage, none of which are evident here. The candidate’s seniority level is junior/early-career (working student and intern roles), which may be below the expected experience for this position.
+
+Overall, the candidate fits an entry-level or junior IT support role but lacks critical cloud and AWS-specific skills, advanced networking knowledge, and language proficiency needed for this AWS Cloud Support Engineer role.
+
+
+RESUME IMPROVEMENT SUGGESTIONS:
+1. Gain hands-on AWS experience: pursue AWS certifications (e.g., AWS Certified Cloud Practitioner, AWS Certified Solutions Architect Associate) and highlight any practical AWS projects or labs.
+2. Develop Linux system administration skills and include relevant experience or training.
+3. Expand networking knowledge to cover advanced topics: routing, switching, firewalls, LAN/WAN, and associated troubleshooting tools (traceroute, iperf, dig, CURL).
+4. Improve German language proficiency to at least B2/C1 level and emphasize this on the resume.
+5. Include any exposure to DevOps practices, CI/CD pipelines, scripting languages (Python, Bash), and cloud security fundamentals.
+6. Highlight any experience or willingness to participate in on-call rotations and customer escalation handling.
+7. Tailor the resume summary to explicitly mention cloud interest and any relevant cloud-related coursework or projects.
+8. Quantify achievements and impact in prior roles where possible to demonstrate problem-solving and customer support effectiveness.
+9. Remove or de-emphasize unrelated education (Mining Engineering) unless linked to IT skills or projects.
+10. Consider adding a dedicated "Cloud Skills" or "AWS Skills" section once relevant experience or certifications are obtained.
