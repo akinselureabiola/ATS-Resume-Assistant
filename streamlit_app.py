@@ -78,7 +78,7 @@ st.set_page_config(
 # =========================
 
 with open(
-    "auth_config.yaml",
+    "users.yaml",
     "r"
 ) as file:
 
