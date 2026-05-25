@@ -9,24 +9,48 @@ credentials:
     admin:
       email: admin@test.com
       name: Admin User
-      password: "$2b$12$O0PpEfhz1O2e.c3CAV84uuGAD17FkQMPGjUnFzDdwpbzAqZyGLhhS"
+      password: "$2b$12$UzxT63rA2QxmeJGsE3d0A.TzNVIdxiiQNnY9dDgYdScsOuXS5rWjO"
       role: admin
       daily_limit: 9999
 
     bankole:
       email: bankole@test.com
       name: Bankole
-      password: "$2b$12$GSZcy/uN57.82UMbBvkcG.autJISZcXJsQvL3PJ3GmEyRw67Umt8m"
-      daily_limit: 3
+      password: "$2b$12$ZfKmA9VmL2y/d4Rrtn1etODXQvJbeN5.KPDhe/Bnn/2wImBvOC3QG"
+      daily_limit: 5
 
     ariyo:
       email: ariyo@test.com
       name: Ariyo
-      password: "$2b$12$4E0zi9O3Duhv785Vf5VW/ez7w.25jxjc9J6nHxz0aXRRJKZALl8Jm"
-      daily_limit: 3
+      password: "$2b$12$OQfD/4zMMiJp5hwLxPa/xucpkJS.9O4l.tEGaYA42L4SjHqNEXgSu"
+      daily_limit: 5
 
     temitayo:
       email: temitayo@test.com
       name: Temitayo Oluwapelumi
-      password: "$2b$12$7kICxbILpUy7.Q8HtDgy.OXLosN9Wh2xHoca8UYwI3QbTdBEU5AKG"
+      password: "$2b$12$UWE/VNbAZi5L4gtx1yNzdeqe5msusCHaZcyse.M9bbzxbpv.XKVbC"
+      daily_limit: 5
+
+    oluwaseyi:
+      email: oluwaseyi@test.com
+      name: Oluwaseyi
+      password: "$2b$12$xMguOj0lhYwLyNVFauUs8.GXndsyJw/SPmxfahqkWFqpAZWhSzDTG"
+      daily_limit: 5
+
+    ayodeji:
+      email: ayodeji@test.com
+      name: Ayodeji
+      password: "$2b$12$8VcDqfvRyclEfgKVDPHTouVUQXUJt9Jqj1Cc4oFr5hW0qLu8bAOcq"
+      daily_limit: 5
+
+    daizsign:
+      email: daizsign@test.com
+      name: Daizsign
+      password: "$2b$12$9Cvr2D2XAv7EmGvCqEwQCekUzt2ZIHSqGr07V6I52j2ZWgj2tLoXy"
+      daily_limit: 5
+
+    ahmed:
+      email: ahmed@test.com
+      name: Ahmed
+      password: "$2b$12$3CKwvH8z.PTL9.tCxXYwuuEUGq9E4PITXuYaKSY5GgLfX9S2N6q3m"
       daily_limit: 5
