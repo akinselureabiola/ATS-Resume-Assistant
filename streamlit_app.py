@@ -1115,9 +1115,10 @@ if st.session_state.generated:
         ):
 
             st.text_area(
-                "",
+                "Resume Preview",
                 st.session_state.tailored_resume,
-                height=400
+                height=400,
+                label_visibility="collapsed"
             )
 
         with open(
@@ -1144,9 +1145,10 @@ if st.session_state.generated:
         ):
 
             st.text_area(
-                "",
+                "Cover Letter Preview",
                 st.session_state.tailored_cover_letter,
-                height=400
+                height=400,
+                label_visibility="collapsed"
             )
 
         with open(
