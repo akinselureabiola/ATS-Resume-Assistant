@@ -1,25 +1,42 @@
-import json
+import os
 from pathlib import Path
 from datetime import datetime
-import os
-import bcrypt
-
-import yaml
-import streamlit_authenticator as stauth
-from yaml.loader import SafeLoader
 
 import streamlit as st
-
 from dotenv import load_dotenv
-from openai import OpenAI
 
-from pypdf import PdfReader
-from docx import Document
+from auth import (
+    render_auth_page,
+    check_authentication
+)
 
-from system_prompts import (
-    ATS_ANALYSIS_PROMPT,
-    RESUME_GENERATION_PROMPT,
-    COVER_LETTER_PROMPT
+from file_utils import (
+    extract_resume_text,
+    validate_file_size
+)
+
+from usage_tracker import (
+    get_remaining_usage,
+    has_remaining_usage,
+    increment_user_usage
+)
+
+from history_manager import (
+    save_generation_history,
+    load_user_history,
+    get_total_generations,
+    get_total_users
+)
+
+from feedback_manager import (
+    save_feedback,
+    load_feedback_data,
+    get_total_feedback
+)
+
+from ats_engine import (
+    run_resume_pipeline,
+    clean_ats_score
 )
 
 from generate_documents import (
@@ -38,10 +55,15 @@ load_dotenv()
 # =========================
 
 folders = [
+
     "data/usage",
+
     "data/feedback",
+
     "data/history",
+
     "outputs",
+
     "analysis"
 ]
 
@@ -53,240 +75,31 @@ for folder in folders:
     )
 
 # =========================
-# OPENAI CLIENT
-# =========================
-
-import streamlit as st
-from openai import OpenAI
-
-client = OpenAI(
-    api_key=st.secrets["OPENAI_API_KEY"]
-)
-
-# =========================
 # PAGE CONFIG
 # =========================
 
 st.set_page_config(
+
     page_title="AI Resume Automation",
+
     page_icon="📄",
+
     layout="wide"
 )
 
 # =========================
-# LOAD AUTH CONFIG
+# AUTH
 # =========================
 
-with open(
-    "users.yaml",
-    "r"
-) as file:
+authenticator, config = render_auth_page()
 
-    config = yaml.load(
-        file,
-        Loader=SafeLoader
-    )
+auth_data = check_authentication()
 
-authenticator = stauth.Authenticate(
-    config["credentials"],
-    config["cookie"]["name"],
-    config["cookie"]["key"],
-    config["cookie"]["expiry_days"]
-)
+username = auth_data["username"]
 
-# =========================
-# SIGNUP SYSTEM
-# =========================
+name = auth_data["name"]
 
-def save_user(
-    name,
-    email,
-    username,
-    password
-):
-
-    hashed_password = bcrypt.hashpw(
-        password.encode(),
-        bcrypt.gensalt()
-    ).decode()
-
-    config["credentials"]["usernames"][username] = {
-        "email": email,
-        "name": name,
-        "password": hashed_password,
-        "role": "user",
-        "daily_limit": 5
-    }
-
-    with open(
-        "users.yaml",
-        "w"
-    ) as file:
-
-        yaml.dump(
-            config,
-            file,
-            default_flow_style=False
-        )
-
-# =========================
-# AUTH TABS
-# =========================
-
-login_tab, signup_tab = st.tabs(
-    [
-        "Login",
-        "Sign Up"
-    ]
-)
-
-# =========================
-# LOGIN TAB
-# =========================
-
-with login_tab:
-
-    authenticator.login()
-
-# =========================
-# SIGNUP TAB
-# =========================
-
-with signup_tab:
-
-    st.subheader(
-        "Create Account"
-    )
-
-    signup_name = st.text_input(
-        "Full Name"
-    )
-
-    signup_email = st.text_input(
-        "Email"
-    )
-
-    signup_username = st.text_input(
-        "Username"
-    )
-
-    signup_password = st.text_input(
-        "Password",
-        type="password"
-    )
-
-    signup_confirm_password = st.text_input(
-        "Confirm Password",
-        type="password"
-    )
-
-    if st.button(
-        "Create Account"
-    ):
-
-        existing_emails = [
-
-            user_data["email"]
-
-            for user_data in config["credentials"]["usernames"].values()
-        ]
-
-        if not signup_name:
-
-            st.error(
-                "Please enter full name."
-            )
-
-        elif not signup_email:
-
-            st.error(
-                "Please enter email."
-            )
-
-        elif not signup_username:
-
-            st.error(
-                "Please enter username."
-            )
-
-        elif not signup_password:
-
-            st.error(
-                "Please enter password."
-            )
-
-        elif (
-            signup_username
-            in config["credentials"]["usernames"]
-        ):
-
-            st.error(
-                "Username already exists."
-            )
-
-        elif signup_email in existing_emails:
-
-            st.error(
-                "Email already exists."
-            )
-
-        elif (
-            signup_password
-            != signup_confirm_password
-        ):
-
-            st.error(
-                "Passwords do not match."
-            )
-
-        else:
-
-            save_user(
-                signup_name,
-                signup_email,
-                signup_username,
-                signup_password
-            )
-
-            st.success(
-                "Account created successfully."
-            )
-
-            st.info(
-                "Refresh the page and login."
-            )
-
-# =========================
-# AUTH STATUS
-# =========================
-
-authentication_status = st.session_state.get(
-    "authentication_status"
-)
-
-name = st.session_state.get(
-    "name"
-)
-
-username = st.session_state.get(
-    "username"
-)
-
-if authentication_status is False:
-
-    st.error(
-        "Incorrect username or password."
-    )
-
-    st.stop()
-
-if authentication_status is None:
-
-    st.warning(
-        "Please login to continue."
-    )
-
-    st.stop()
+authentication_status = auth_data["authentication_status"]
 
 # =========================
 # SESSION STATE
@@ -295,343 +108,6 @@ if authentication_status is None:
 if "generated" not in st.session_state:
 
     st.session_state.generated = False
-
-# =========================
-# USAGE LIMIT SYSTEM
-# =========================
-
-user_data = config["credentials"]["usernames"][username]
-
-DAILY_LIMIT = user_data.get(
-    "daily_limit",
-    5
-)
-
-def get_usage_file(username):
-
-    today = datetime.now().strftime(
-        "%Y-%m-%d"
-    )
-
-    return (
-        f"data/usage/{username}_{today}.json"
-    )
-
-def get_user_usage(username):
-
-    usage_file = get_usage_file(
-        username
-    )
-
-    if os.path.exists(usage_file):
-
-        with open(
-            usage_file,
-            "r"
-        ) as file:
-
-            data = json.load(file)
-
-            return data.get(
-                "generations",
-                0
-            )
-
-    return 0
-
-def increment_user_usage(username):
-
-    usage_file = get_usage_file(
-        username
-    )
-
-    current_usage = get_user_usage(
-        username
-    )
-
-    data = {
-        "username": username,
-        "generations": current_usage + 1
-    }
-
-    with open(
-        usage_file,
-        "w"
-    ) as file:
-
-        json.dump(
-            data,
-            file,
-            indent=2
-        )
-
-# =========================
-# SAVE HISTORY
-# =========================
-
-def save_generation_history(
-    username,
-    ats_score,
-    job_description
-):
-
-    timestamp = datetime.now().strftime(
-        "%Y%m%d_%H%M%S"
-    )
-
-    history_data = {
-        "username": username,
-        "timestamp": timestamp,
-        "ats_score": ats_score,
-        "job_description_preview": (
-            job_description[:300]
-        )
-    }
-
-    history_file = (
-        f"data/history/{username}_{timestamp}.json"
-    )
-
-    with open(
-        history_file,
-        "w"
-    ) as file:
-
-        json.dump(
-            history_data,
-            file,
-            indent=2
-        )
-
-# =========================
-# LOAD USER HISTORY
-# =========================
-
-def load_user_history(username):
-
-    history_files = sorted(
-        os.listdir("data/history"),
-        reverse=True
-    )
-
-    user_history = []
-
-    for file in history_files:
-
-        if file.startswith(username):
-
-            file_path = (
-                f"data/history/{file}"
-            )
-
-            with open(
-                file_path,
-                "r"
-            ) as history_file:
-
-                data = json.load(
-                    history_file
-                )
-
-                user_history.append(
-                    data
-                )
-
-    return user_history
-
-# =========================
-# FEEDBACK SYSTEM
-# =========================
-
-def save_feedback(
-    username,
-    feedback_type,
-    feedback_comment
-):
-
-    timestamp = datetime.now().strftime(
-        "%Y%m%d_%H%M%S"
-    )
-
-    feedback_data = {
-        "username": username,
-        "timestamp": timestamp,
-        "feedback": feedback_type,
-        "comment": feedback_comment
-    }
-
-    feedback_file = (
-        f"data/feedback/{username}_{timestamp}.json"
-    )
-
-    with open(
-        feedback_file,
-        "w"
-    ) as file:
-
-        json.dump(
-            feedback_data,
-            file,
-            indent=2
-        )
-
-def load_feedback_data():
-
-    feedback_files = os.listdir(
-        "data/feedback"
-    )
-
-    feedback_data = []
-
-    for file in feedback_files:
-
-        file_path = (
-            f"data/feedback/{file}"
-        )
-
-        with open(
-            file_path,
-            "r"
-        ) as feedback_file:
-
-            data = json.load(
-                feedback_file
-            )
-
-            feedback_data.append(
-                data
-            )
-
-    return feedback_data
-
-# =========================
-# ADMIN ANALYTICS
-# =========================
-
-def get_total_generations():
-
-    return len(
-        os.listdir("data/history")
-    )
-
-def get_total_feedback():
-
-    return len(
-        os.listdir("data/feedback")
-    )
-
-def get_total_users():
-
-    users = set()
-
-    for file in os.listdir(
-        "data/history"
-    ):
-
-        username = file.split("_")[0]
-
-        users.add(username)
-
-    return len(users)
-
-# =========================
-# HELPERS
-# =========================
-
-def clean_ats_score(score_text):
-
-    try:
-
-        digits = "".join(
-            filter(str.isdigit, score_text)
-        )
-
-        return int(digits)
-
-    except:
-
-        return 0
-
-def extract_text_from_pdf(file):
-
-    reader = PdfReader(file)
-
-    text = ""
-
-    for page in reader.pages:
-
-        extracted = page.extract_text()
-
-        if extracted:
-
-            text += extracted + "\n"
-
-    return text
-
-def extract_text_from_docx(file):
-
-    doc = Document(file)
-
-    text = []
-
-    for paragraph in doc.paragraphs:
-
-        text.append(paragraph.text)
-
-    return "\n".join(text)
-
-def extract_resume_text(uploaded_file):
-
-    file_name = uploaded_file.name.lower()
-
-    if file_name.endswith(".txt"):
-
-        return uploaded_file.read().decode(
-            "utf-8"
-        )
-
-    elif file_name.endswith(".pdf"):
-
-        return extract_text_from_pdf(
-            uploaded_file
-        )
-
-    elif file_name.endswith(".docx"):
-
-        return extract_text_from_docx(
-            uploaded_file
-        )
-
-    else:
-
-        return None
-
-def extract_section(
-    text,
-    start,
-    end=None
-):
-
-    try:
-
-        if end:
-
-            return (
-                text
-                .split(start)[1]
-                .split(end)[0]
-                .strip()
-            )
-
-        return (
-            text
-            .split(start)[1]
-            .strip()
-        )
-
-    except:
-
-        return "Not available"
 
 # =========================
 # HEADER
@@ -650,17 +126,17 @@ st.markdown(
 )
 
 # =========================
-# SIDEBAR
+# USAGE
 # =========================
 
-current_usage = get_user_usage(
+remaining_usage = get_remaining_usage(
+    config,
     username
 )
 
-remaining_usage = max(
-    DAILY_LIMIT - current_usage,
-    0
-)
+# =========================
+# SIDEBAR
+# =========================
 
 with st.sidebar:
 
@@ -671,12 +147,14 @@ with st.sidebar:
     st.markdown(
         """
         ### Features
-        
+
         - ATS Match Analysis
         - Resume Tailoring
         - Cover Letter Generation
         - DOCX Export
         - Recruiter Optimization
+        - Achievement Rewriting
+        - ATS Optimization Loop
         - Feedback Tracking
         - Usage Tracking
         - Generation History
@@ -713,11 +191,9 @@ uploaded_resume = st.file_uploader(
 
 if uploaded_resume:
 
-    file_size_mb = (
-        uploaded_resume.size / 1024 / 1024
-    )
-
-    if file_size_mb > 5:
+    if not validate_file_size(
+        uploaded_resume
+    ):
 
         st.error(
             "Resume file too large. Maximum file size is 5MB."
@@ -758,7 +234,10 @@ with col2:
 
 if generate_clicked:
 
-    if current_usage >= DAILY_LIMIT:
+    if not has_remaining_usage(
+        config,
+        username
+    ):
 
         st.error(
             "Daily usage limit reached."
@@ -772,170 +251,82 @@ if generate_clicked:
             "Please upload a resume."
         )
 
-    elif not job_description:
+        st.stop()
+
+    if not job_description:
 
         st.warning(
             "Please paste a job description."
         )
 
-    else:
+        st.stop()
 
-        resume_text = extract_resume_text(
-            uploaded_resume
+    resume_text = extract_resume_text(
+        uploaded_resume
+    )
+
+    if not resume_text:
+
+        st.error(
+            "Could not process uploaded resume."
         )
 
-        if not resume_text:
+        st.stop()
 
-            st.error(
-                "Could not process uploaded resume."
+    try:
+
+        with st.spinner(
+            "Optimizing resume and generating documents..."
+        ):
+
+            timestamp = datetime.now().strftime(
+                "%Y%m%d_%H%M%S"
             )
 
-            st.stop()
+            # =========================
+            # RUN AI PIPELINE
+            # =========================
 
-        try:
+            results = run_resume_pipeline(
+                resume_text,
+                job_description
+            )
 
-            with st.spinner(
-                "Generating recruiter-ready documents..."
-            ):
+            tailored_resume = results[
+                "tailored_resume"
+            ]
 
-                timestamp = datetime.now().strftime(
-                    "%Y%m%d_%H%M%S"
-                )
+            tailored_cover_letter = results[
+                "tailored_cover_letter"
+            ]
 
-                ats_prompt = f"""
-RESUME:
+            original_ats_score = results[
+                "original_ats_score"
+            ]
 
-{resume_text}
+            optimized_ats_score = results[
+                "optimized_ats_score"
+            ]
 
-JOB DESCRIPTION:
+            matching_keywords = results[
+                "matching_keywords"
+            ]
 
-{job_description}
-"""
+            missing_keywords = results[
+                "missing_keywords"
+            ]
 
-                ats_response = client.chat.completions.create(
-                    model="gpt-4.1-mini",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": ATS_ANALYSIS_PROMPT
-                        },
-                        {
-                            "role": "user",
-                            "content": ats_prompt
-                        }
-                    ],
-                    temperature=0.4
-                )
+            job_fit_analysis = results[
+                "job_fit_analysis"
+            ]
 
-                ats_output = (
-                    ats_response
-                    .choices[0]
-                    .message
-                    .content
-                )
+            improvement_suggestions = results[
+                "improvement_suggestions"
+            ]
 
-                ats_score = extract_section(
-                    ats_output,
-                    "===ATS_SCORE===",
-                    "===MATCHING_KEYWORDS==="
-                )
-
-                matching_keywords = extract_section(
-                    ats_output,
-                    "===MATCHING_KEYWORDS===",
-                    "===MISSING_KEYWORDS==="
-                )
-
-                missing_keywords = extract_section(
-                    ats_output,
-                    "===MISSING_KEYWORDS===",
-                    "===JOB_FIT_ANALYSIS==="
-                )
-
-                job_fit_analysis = extract_section(
-                    ats_output,
-                    "===JOB_FIT_ANALYSIS===",
-                    "===IMPROVEMENT_SUGGESTIONS==="
-                )
-
-                improvement_suggestions = extract_section(
-                    ats_output,
-                    "===IMPROVEMENT_SUGGESTIONS==="
-                )
-
-                resume_prompt = f"""
-MASTER RESUME:
-
-{resume_text}
-
-JOB DESCRIPTION:
-
-{job_description}
-"""
-
-                resume_response = client.chat.completions.create(
-                    model="gpt-4.1-mini",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": RESUME_GENERATION_PROMPT
-                        },
-                        {
-                            "role": "user",
-                            "content": resume_prompt
-                        }
-                    ],
-                    temperature=0.7
-                )
-
-                tailored_resume = (
-                    resume_response
-                    .choices[0]
-                    .message
-                    .content
-                    .replace(
-                        "Final Resume",
-                        ""
-                    )
-                    .strip()
-                )
-
-                cover_prompt = f"""
-MASTER RESUME:
-
-{resume_text}
-
-JOB DESCRIPTION:
-
-{job_description}
-"""
-
-                cover_response = client.chat.completions.create(
-                    model="gpt-4.1-mini",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": COVER_LETTER_PROMPT
-                        },
-                        {
-                            "role": "user",
-                            "content": cover_prompt
-                        }
-                    ],
-                    temperature=0.7
-                )
-
-                tailored_cover_letter = (
-                    cover_response
-                    .choices[0]
-                    .message
-                    .content
-                    .replace(
-                        "Final Cover Letter",
-                        ""
-                    )
-                    .strip()
-                )
+            # =========================
+            # SAVE ANALYSIS
+            # =========================
 
             analysis_filename = (
                 f"analysis/ats_analysis_{timestamp}.txt"
@@ -944,8 +335,11 @@ JOB DESCRIPTION:
             analysis_content = f"""
 ATS MATCH ANALYSIS
 
-Estimated ATS Match Score:
-{ats_score}
+ORIGINAL ATS SCORE:
+{original_ats_score}
+
+OPTIMIZED ATS SCORE:
+{optimized_ats_score}
 
 MATCHING KEYWORDS:
 {matching_keywords}
@@ -970,6 +364,10 @@ RESUME IMPROVEMENT SUGGESTIONS:
                     analysis_content
                 )
 
+            # =========================
+            # DOCX GENERATION
+            # =========================
+
             resume_filename = (
                 f"outputs/resume_{timestamp}.docx"
             )
@@ -983,10 +381,16 @@ RESUME IMPROVEMENT SUGGESTIONS:
                 resume_filename
             )
 
-            cover_letter_path = generate_cover_letter_docx(
-                tailored_cover_letter,
-                cover_letter_filename
+            cover_letter_path = (
+                generate_cover_letter_docx(
+                    tailored_cover_letter,
+                    cover_letter_filename
+                )
             )
+
+            # =========================
+            # TRACKING
+            # =========================
 
             increment_user_usage(
                 username
@@ -994,25 +398,41 @@ RESUME IMPROVEMENT SUGGESTIONS:
 
             save_generation_history(
                 username,
-                ats_score,
+                optimized_ats_score,
                 job_description
             )
 
-            st.session_state.tailored_resume = tailored_resume
+            # =========================
+            # SESSION STATE
+            # =========================
+
+            st.session_state.tailored_resume = (
+                tailored_resume
+            )
 
             st.session_state.tailored_cover_letter = (
                 tailored_cover_letter
             )
 
-            st.session_state.resume_path = resume_path
+            st.session_state.resume_path = (
+                resume_path
+            )
 
             st.session_state.cover_letter_path = (
                 cover_letter_path
             )
 
-            st.session_state.timestamp = timestamp
+            st.session_state.timestamp = (
+                timestamp
+            )
 
-            st.session_state.ats_score = ats_score
+            st.session_state.original_ats_score = (
+                original_ats_score
+            )
+
+            st.session_state.optimized_ats_score = (
+                optimized_ats_score
+            )
 
             st.session_state.matching_keywords = (
                 matching_keywords
@@ -1032,13 +452,13 @@ RESUME IMPROVEMENT SUGGESTIONS:
 
             st.session_state.generated = True
 
-        except Exception as error:
+    except Exception as error:
 
-            st.error(
-                f"Generation failed: {error}"
-            )
+        st.error(
+            f"Generation failed: {error}"
+        )
 
-            st.stop()
+        st.stop()
 
 # =========================
 # DISPLAY RESULTS
@@ -1058,17 +478,26 @@ if st.session_state.generated:
 
     with col1:
 
-        clean_score = clean_ats_score(
-            st.session_state.ats_score
+        original_score = clean_ats_score(
+            st.session_state.original_ats_score
+        )
+
+        optimized_score = clean_ats_score(
+            st.session_state.optimized_ats_score
         )
 
         st.metric(
-            "Estimated ATS Match Score",
-            f"{clean_score}%"
+            "Original ATS Score",
+            f"{original_score}%"
+        )
+
+        st.metric(
+            "Optimized ATS Score",
+            f"{optimized_score}%"
         )
 
         st.progress(
-            clean_score / 100
+            optimized_score / 100
         )
 
         st.markdown(
@@ -1109,6 +538,10 @@ if st.session_state.generated:
 
     col1, col2 = st.columns(2)
 
+    # =========================
+    # RESUME
+    # =========================
+
     with col1:
 
         st.subheader(
@@ -1139,6 +572,10 @@ if st.session_state.generated:
                 )
             )
 
+    # =========================
+    # COVER LETTER
+    # =========================
+
     with col2:
 
         st.subheader(
@@ -1168,6 +605,10 @@ if st.session_state.generated:
                     f"Cover_Letter_{st.session_state.timestamp}.docx"
                 )
             )
+
+    # =========================
+    # FEEDBACK
+    # =========================
 
     st.divider()
 
@@ -1202,7 +643,7 @@ if st.session_state.generated:
         )
 
 # =========================
-# USER HISTORY
+# HISTORY
 # =========================
 
 st.divider()

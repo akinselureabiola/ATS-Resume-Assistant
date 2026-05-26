@@ -4,6 +4,10 @@ from docx.shared import Inches
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
+# ==========================================
+# DOCUMENT STYLING
+# ==========================================
+
 def style_document(doc):
 
     sections = doc.sections
@@ -23,15 +27,9 @@ def style_document(doc):
     font.size = Pt(11)
 
 
-def add_section_heading(doc, text):
-
-    heading = doc.add_paragraph()
-
-    run = heading.add_run(text)
-
-    run.bold = True
-    run.font.size = Pt(14)
-
+# ==========================================
+# NAME HEADER
+# ==========================================
 
 def add_name_heading(doc, text):
 
@@ -45,6 +43,10 @@ def add_name_heading(doc, text):
     run.font.size = Pt(20)
 
 
+# ==========================================
+# CONTACT LINE
+# ==========================================
+
 def add_contact_line(doc, text):
 
     paragraph = doc.add_paragraph()
@@ -56,6 +58,24 @@ def add_contact_line(doc, text):
     run.font.size = Pt(10)
 
 
+# ==========================================
+# SECTION HEADING
+# ==========================================
+
+def add_section_heading(doc, text):
+
+    heading = doc.add_paragraph()
+
+    run = heading.add_run(text)
+
+    run.bold = True
+    run.font.size = Pt(14)
+
+
+# ==========================================
+# RESUME GENERATION
+# ==========================================
+
 def generate_resume_docx(content, output_path):
 
     doc = Document()
@@ -66,6 +86,18 @@ def generate_resume_docx(content, output_path):
 
     first_line = True
 
+    section_titles = [
+        "Professional Summary",
+        "Skills",
+        "Professional Experience",
+        "Projects",
+        "Technical Project",
+        "Education",
+        "Certifications",
+        "Languages",
+        "Profile"
+    ]
+
     for paragraph in paragraphs:
 
         paragraph = paragraph.strip()
@@ -73,9 +105,9 @@ def generate_resume_docx(content, output_path):
         if not paragraph:
             continue
 
-        # =========================
-        # NAME HEADER
-        # =========================
+        # ==========================
+        # NAME
+        # ==========================
 
         if first_line:
 
@@ -88,9 +120,9 @@ def generate_resume_docx(content, output_path):
 
             continue
 
-        # =========================
+        # ==========================
         # CONTACT INFO
-        # =========================
+        # ==========================
 
         if (
             "@" in paragraph
@@ -98,6 +130,7 @@ def generate_resume_docx(content, output_path):
             or "github.com" in paragraph
             or "+" in paragraph
             or "Berlin" in paragraph
+            or "Germany" in paragraph
         ):
 
             add_contact_line(
@@ -107,19 +140,9 @@ def generate_resume_docx(content, output_path):
 
             continue
 
-        # =========================
+        # ==========================
         # SECTION HEADINGS
-        # =========================
-
-        section_titles = [
-            "Professional Summary",
-            "Skills",
-            "Professional Experience",
-            "Projects",
-            "Education",
-            "Certifications",
-            "Languages"
-        ]
+        # ==========================
 
         if paragraph in section_titles:
 
@@ -130,9 +153,9 @@ def generate_resume_docx(content, output_path):
 
             continue
 
-        # =========================
+        # ==========================
         # BULLET POINTS
-        # =========================
+        # ==========================
 
         if (
             paragraph.startswith("-")
@@ -153,18 +176,20 @@ def generate_resume_docx(content, output_path):
 
             continue
 
-        # =========================
+        # ==========================
         # NORMAL TEXT
-        # =========================
+        # ==========================
 
-        doc.add_paragraph(
-            paragraph
-        )
+        doc.add_paragraph(paragraph)
 
     doc.save(output_path)
 
     return output_path
 
+
+# ==========================================
+# COVER LETTER GENERATION
+# ==========================================
 
 def generate_cover_letter_docx(content, output_path):
 
